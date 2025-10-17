@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="theme-color" content="#1565c0" />
+  <title>Agenda de Pedidos</title>
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<header class="topbar">
+  <h1>Agenda de Pedidos</h1>
+  <nav>
+    <button id="nav-agenda" class="active">Agenda</button>
+    <button id="nav-cal">Calendario</button>
+    <button id="btn-nuevo" class="primary">➕ Nuevo</button>
+  </nav>
+</header>
+
+<main>
+  <!-- AGENDA -->
+  <section id="view-agenda">
+    <div class="actions">
+      <button id="btn-export">Exportar CSV</button>
+      <label class="file-btn">Importar CSV
+        <input type="file" id="file-import" accept=".csv,.tsv,text/csv,text/tab-separated-values" hidden>
+      </label>
+    </div>
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Fecha</th><th>Hora</th><th>Cliente</th><th>Producto</th><th>Precio</th><th>Teléfono</th><th>Dirección</th><th></th>
+        </tr>
+      </thead>
+      <tbody id="tbody-agenda"></tbody>
+    </table>
+  </section>
+
+  <!-- CALENDARIO -->
+  <section id="view-cal" class="hidden">
+    <div class="cal-head">
+      <button id="cal-prev">◀</button>
+      <h2 id="cal-title"></h2>
+      <button id="cal-next">▶</button>
+    </div>
+    <div class="cal-grid" id="cal-grid"></div>
+    <div id="cal-list" class="cal-list"></div>
+  </section>
+</main>
+
+<!-- MODAL ALTA/EDICIÓN -->
+<div id="modal" class="modal hidden">
+  <div class="card">
+    <h3 id="modal-title">Nuevo pedido</h3>
+    <form id="form">
+      <input type="hidden" id="id">
+      <div class="row"><label>Nombre *</label><input id="nombre" required></div>
+      <div class="row"><label>Apellido</label><input id="apellido"></div>
+      <div class="row"><label>Producto *</label><input id="producto" required></div>
+      <div class="row"><label>Precio *</label><input id="precio" type="number" step="0.01" required></div>
+      <div class="row"><label>Dirección *</label><input id="direccion" required></div>
+      <div class="row"><label>Teléfono *</label><input id="telefono" inputmode="tel" required></div>
+      <div class="row two">
+        <div><label>Fecha *</label><input id="fecha" type="date" required></div>
+        <div><label>Hora *</label><input id="hora" type="time" required></div>
+      </div>
+      <div class="row"><label>Notas</label><textarea id="notas" rows="3"></textarea></div>
+      <div class="actions">
+        <button type="button" id="btn-cancelar">Cancelar</button>
+        <button type="submit" class="primary">Guardar</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>
