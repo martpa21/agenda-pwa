@@ -20,49 +20,47 @@ const fmtPrecio = v => new Intl.NumberFormat('es-AR',{style:'currency',currency:
 const parseFloatSafe = s => { const x = parseFloat(String(s).replace(",", ".")); return isNaN(x)? null : x; };
 const byDateTime = (a,b) => (a.fecha+b.hora).localeCompare(b.fecha+b.hora);
 const hoyISO = () => new Date().toISOString().slice(0,10);
+function toDMY(iso){ const [y,m,d]=iso.split("-"); return `${d}/${m}/${y}`; }
+function fromDMY(dmy){ const m = dmy.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/); if(!m) return hoyISO(); return `${m[3]}-${m[2].padStart(2,"0")}-${m[1].padStart(2,"0")}`; }
+function esc(s){ return String(s||"").replace(/[&<>]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;'}[c])); }
 
-// ======= Modal helpers (robustos) =======
+// ======= Modal (con cierres a prueba de balas) =======
 const modal = $("#modal");
 const form  = $("#form");
 const modalCard = modal ? modal.querySelector(".card") : null;
 
-function showModal() {
-  if (!modal) return;
-  modal.classList.remove("hidden");
-  modal.style.display = "flex";        // fallback por si el CSS falla
-  modal.setAttribute("aria-hidden","false");
-  document.body.style.overflow = "hidden"; // bloquear scroll de fondo
-}
-function hideModal() {
+// Respaldo global (lo llama la X y el botón Cancelar por HTML)
+window.closeModalInline = function(){
   if (!modal) return;
   modal.classList.add("hidden");
-  modal.style.display = "none";        // fallback
+  modal.style.display = "none";
   modal.setAttribute("aria-hidden","true");
-  document.body.style.overflow = "";   // restaurar scroll
+  document.body.style.overflow = "";
+};
+
+function showModal() {
+  modal.classList.remove("hidden");
+  modal.style.display = "flex";
+  modal.setAttribute("aria-hidden","false");
+  document.body.style.overflow = "hidden";
+}
+function hideModal() {
+  window.closeModalInline(); // usar el mismo cierre “fuerte”
 }
 
-// Cierres seguros
 function wireModalClosers(){
-  const btnNuevo = $("#btn-nuevo");
+  $("#btn-nuevo").onclick     = () => openNew();
   const btnCancelar = $("#btn-cancelar");
-  const btnX = $("#btn-x"); // puede no existir, no pasa nada
-
-  if (btnNuevo) btnNuevo.onclick = () => openNew();
-  if (btnCancelar) btnCancelar.onclick = (e) => { e.preventDefault(); hideModal(); };
+  if (btnCancelar) btnCancelar.onclick = (e)=>{ e.preventDefault(); hideModal(); };
+  const btnX = $("#btn-x");
   if (btnX) btnX.onclick = () => hideModal();
 
-  if (modal) {
-    // cerrar tocando afuera
-    modal.addEventListener("click", e => { if (e.target === modal) hideModal(); });
-  }
-  if (modalCard) {
-    // que el click adentro NO cierre
-    modalCard.addEventListener("click", e => e.stopPropagation());
-  }
+  // cerrar tocando afuera
+  modal.addEventListener("click", e => { if (e.target === modal) hideModal(); });
+  // evitar que clics dentro cierren
+  modalCard.addEventListener("click", e => e.stopPropagation());
   // cerrar con ESC
-  window.addEventListener("keydown", e => {
-    if (e.key === "Escape" && !modal.classList.contains("hidden")) hideModal();
-  });
+  window.addEventListener("keydown", e => { if (e.key === "Escape" && !modal.classList.contains("hidden")) hideModal(); });
 }
 
 // ======= Abrir / Cargar formulario =======
@@ -169,7 +167,7 @@ form.onsubmit = (ev) => {
   save(pedidos);
   renderAgenda();
   renderCalendar(currentYM);
-  hideModal();  // <- cerrar siempre al guardar
+  hideModal(); // <- cerrar siempre
 };
 
 function del(id) {
@@ -224,13 +222,9 @@ $("#file-import").onchange = async (ev) => {
 // ======= Calendario =======
 let currentYM = ymOf(new Date());
 const monthName = (ym) => new Date(ym.year, ym.month, 1).toLocaleDateString('es-AR',{month:'long', year:'numeric'});
-
 function ymOf(d){ return {year:d.getFullYear(), month:d.getMonth()}; }
 function firstDay(ym){ return new Date(ym.year, ym.month, 1); }
 function daysInMonth(ym){ return new Date(ym.year, ym.month+1, 0).getDate(); }
-function toDMY(iso){ const [y,m,d]=iso.split("-"); return `${d}/${m}/${y}`; }
-function fromDMY(dmy){ const m = dmy.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/); if(!m) return hoyISO(); return `${m[3]}-${m[2].padStart(2,"0")}-${m[1].padStart(2,"0")}`; }
-function esc(s){ return String(s||"").replace(/[&<>]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;'}[c])); }
 
 function renderCalendar(ym=currentYM){
   currentYM = ym;
@@ -295,8 +289,7 @@ if ("serviceWorker" in navigator) {
 }
 
 // Init
-hideModal();      // <- asegurar que arranca oculto
+hideModal();           // asegurar que inicia oculto
 renderAgenda();
 renderCalendar(currentYM);
 wireModalClosers();
-
