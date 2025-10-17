@@ -21,6 +21,76 @@ const parseFloatSafe = s => { const x = parseFloat(String(s).replace(",", "."));
 const byDateTime = (a,b) => (a.fecha+b.hora).localeCompare(b.fecha+b.hora);
 const hoyISO = () => new Date().toISOString().slice(0,10);
 
+// ======= Modal helpers (robustos) =======
+const modal = $("#modal");
+const form  = $("#form");
+const modalCard = modal ? modal.querySelector(".card") : null;
+
+function showModal() {
+  if (!modal) return;
+  modal.classList.remove("hidden");
+  modal.style.display = "flex";        // fallback por si el CSS falla
+  modal.setAttribute("aria-hidden","false");
+  document.body.style.overflow = "hidden"; // bloquear scroll de fondo
+}
+function hideModal() {
+  if (!modal) return;
+  modal.classList.add("hidden");
+  modal.style.display = "none";        // fallback
+  modal.setAttribute("aria-hidden","true");
+  document.body.style.overflow = "";   // restaurar scroll
+}
+
+// Cierres seguros
+function wireModalClosers(){
+  const btnNuevo = $("#btn-nuevo");
+  const btnCancelar = $("#btn-cancelar");
+  const btnX = $("#btn-x"); // puede no existir, no pasa nada
+
+  if (btnNuevo) btnNuevo.onclick = () => openNew();
+  if (btnCancelar) btnCancelar.onclick = (e) => { e.preventDefault(); hideModal(); };
+  if (btnX) btnX.onclick = () => hideModal();
+
+  if (modal) {
+    // cerrar tocando afuera
+    modal.addEventListener("click", e => { if (e.target === modal) hideModal(); });
+  }
+  if (modalCard) {
+    // que el click adentro NO cierre
+    modalCard.addEventListener("click", e => e.stopPropagation());
+  }
+  // cerrar con ESC
+  window.addEventListener("keydown", e => {
+    if (e.key === "Escape" && !modal.classList.contains("hidden")) hideModal();
+  });
+}
+
+// ======= Abrir / Cargar formulario =======
+function openNew() {
+  $("#modal-title").textContent = "Nuevo pedido";
+  form.reset();
+  $("#id").value = "";
+  $("#fecha").value = hoyISO();
+  $("#hora").value = new Date().toTimeString().slice(0,5);
+  showModal();
+}
+function openEdit(id) {
+  const p = pedidos.find(x => x.id === id);
+  if (!p) return;
+  $("#modal-title").textContent = "Editar pedido";
+  $("#id").value = p.id;
+  $("#nombre").value = p.nombre;
+  $("#apellido").value = p.apellido || "";
+  $("#producto").value = p.producto;
+  $("#precio").value = p.precio;
+  $("#direccion").value = p.direccion;
+  $("#telefono").value = p.telefono;
+  $("#fecha").value = p.fecha;
+  $("#hora").value = p.hora;
+  $("#notas").value = p.notas || "";
+  showModal();
+}
+
 // ======= Agenda =======
 function renderAgenda() {
   pedidos.sort(byDateTime);
@@ -44,7 +114,6 @@ function renderAgenda() {
     tbody.appendChild(tr);
   }
 }
-
 $("#tbody-agenda").addEventListener("click", (e) => {
   const idEdit = e.target.getAttribute("data-edit");
   const idDel  = e.target.getAttribute("data-del");
@@ -52,39 +121,7 @@ $("#tbody-agenda").addEventListener("click", (e) => {
   if (idDel)  del(+idDel);
 });
 
-// ======= Form modal =======
-const modal = $("#modal");
-const form  = $("#form");
-
-$("#btn-nuevo").onclick = () => openNew();
-$("#btn-cancelar").onclick = () => closeModal();
-
-function openNew() {
-  $("#modal-title").textContent = "Nuevo pedido";
-  form.reset();
-  $("#id").value = "";
-  $("#fecha").value = hoyISO();
-  $("#hora").value = new Date().toTimeString().slice(0,5);
-  modal.classList.remove("hidden");
-}
-function openEdit(id) {
-  const p = pedidos.find(x => x.id === id);
-  if (!p) return;
-  $("#modal-title").textContent = "Editar pedido";
-  $("#id").value = p.id;
-  $("#nombre").value = p.nombre;
-  $("#apellido").value = p.apellido || "";
-  $("#producto").value = p.producto;
-  $("#precio").value = p.precio;
-  $("#direccion").value = p.direccion;
-  $("#telefono").value = p.telefono;
-  $("#fecha").value = p.fecha;
-  $("#hora").value = p.hora;
-  $("#notas").value = p.notas || "";
-  modal.classList.remove("hidden");
-}
-function closeModal(){ modal.classList.add("hidden"); }
-
+// ======= Form =======
 form.onsubmit = (ev) => {
   ev.preventDefault();
   const id = $("#id").value ? +$("#id").value : null;
@@ -132,7 +169,7 @@ form.onsubmit = (ev) => {
   save(pedidos);
   renderAgenda();
   renderCalendar(currentYM);
-  closeModal();
+  hideModal();  // <- cerrar siempre al guardar
 };
 
 function del(id) {
@@ -156,12 +193,11 @@ $("#btn-export").onclick = () => {
   a.click();
   URL.revokeObjectURL(a.href);
 };
-
 $("#file-import").onchange = async (ev) => {
   const file = ev.target.files[0]; if (!file) return;
   const text = await file.text();
   const rows = text.trim().split(/\r?\n/);
-  const head = rows.shift(); // skip header
+  rows.shift(); // header
   for (const row of rows) {
     const cols = row.split("\t");
     if (cols.length < 10) continue;
@@ -238,12 +274,13 @@ function showDay(iso){
 }
 function el(tag, cls, html){ const e=document.createElement(tag); if(cls) e.className=cls; if(html!==undefined) e.innerHTML=html; return e; }
 
+// Nav
 $("#nav-agenda").onclick = () => { $("#nav-agenda").classList.add("active"); $("#nav-cal").classList.remove("active"); $("#view-agenda").classList.remove("hidden"); $("#view-cal").classList.add("hidden"); };
 $("#nav-cal").onclick    = () => { $("#nav-cal").classList.add("active"); $("#nav-agenda").classList.remove("active"); $("#view-cal").classList.remove("hidden"); $("#view-agenda").classList.add("hidden"); renderCalendar(currentYM); };
-$("#cal-prev").onclick   = () => renderCalendar({year:currentYM.year, month:currentYM.month-1 + (currentYM.month?0:12)}); // adjust handled below
+$("#cal-prev").onclick   = () => renderCalendar({year:currentYM.year, month:currentYM.month-1 + (currentYM.month?0:12)});
 $("#cal-next").onclick   = () => renderCalendar({year:currentYM.year, month:currentYM.month+1});
 
-// fix prev/next year overflow
+// Ajuste overflow de meses
 const _renderCalendar = renderCalendar;
 renderCalendar = (ym) => {
   let {year,month} = ym;
@@ -258,5 +295,8 @@ if ("serviceWorker" in navigator) {
 }
 
 // Init
+hideModal();      // <- asegurar que arranca oculto
 renderAgenda();
 renderCalendar(currentYM);
+wireModalClosers();
+
