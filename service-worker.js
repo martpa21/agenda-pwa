@@ -1,4 +1,5 @@
-const CACHE = "agenda-pwa-v4";
+// Subí el número para obligar a bajar la versión nueva cuando actualices
+const CACHE = "agenda-pwa-v6";
 const ASSETS = ["./","./index.html","./styles.css","./app.js","./manifest.webmanifest"];
 
 self.addEventListener("install", e => {
