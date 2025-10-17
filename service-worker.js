@@ -1,4 +1,4 @@
-const CACHE = "agenda-pwa-v1";
+const CACHE = "agenda-pwa-v4";
 const ASSETS = ["./","./index.html","./styles.css","./app.js","./manifest.webmanifest"];
 
 self.addEventListener("install", e => {
