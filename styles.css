@@ -1,0 +1,32 @@
+:root{--c:#1565c0;--bg:#fff;--txt:#222;--muted:#666;--line:#eee}
+*{box-sizing:border-box} body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu;color:var(--txt);background:var(--bg)}
+.topbar{position:sticky;top:0;background:#fff;border-bottom:1px solid var(--line);padding:10px;display:flex;align-items:center;gap:12px;z-index:2}
+.topbar h1{font-size:18px;margin:0}
+.topbar nav{display:flex;gap:8px;margin-left:auto}
+button{border:1px solid var(--line);background:#f6f7f9;padding:8px 12px;border-radius:10px;cursor:pointer}
+button.primary{background:var(--c);color:#fff;border-color:var(--c)}
+button.active{outline:2px solid var(--c)}
+main{padding:12px}
+.hidden{display:none}
+
+.table{width:100%;border-collapse:collapse} .table th,.table td{padding:10px;border-bottom:1px solid var(--line);text-align:left}
+.table th{background:#fafafa}
+.actions{display:flex;gap:8px;justify-content:flex-end;margin:10px 0}
+.file-btn{display:inline-flex;align-items:center;gap:8px;border:1px solid var(--line);background:#f6f7f9;padding:8px 12px;border-radius:10px;cursor:pointer}
+
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.35);display:flex;align-items:center;justify-content:center;padding:12px}
+.card{background:#fff;border-radius:16px;padding:12px;max-width:720px;width:100%;box-shadow:0 10px 30px rgba(0,0,0,.2)}
+.card h3{margin:8px 6px}
+.row{display:flex;flex-direction:column;margin:6px}
+.row.two{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+input,textarea{padding:10px;border:1px solid var(--line);border-radius:10px}
+
+.cal-head{display:flex;align-items:center;justify-content:center;gap:8px}
+.cal-head h2{min-width:200px;text-align:center}
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;margin:10px 0}
+.day{border:1px solid var(--line);border-radius:12px;min-height:72px;padding:6px}
+.day b{display:inline-block;margin-bottom:4px}
+.muted{color:var(--muted)}
+.pill{display:inline-block;background:#eef;border-radius:999px;padding:1px 8px;font-size:12px;margin-left:6px}
+.cal-list .item{border:1px solid var(--line);border-radius:12px;padding:8px;margin:6px 0}
+.small{font-size:12px;color:var(--muted)}
