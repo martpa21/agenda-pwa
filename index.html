@@ -50,8 +50,10 @@
 </main>
 
 <!-- MODAL ALTA/EDICIÓN -->
-<div id="modal" class="modal hidden">
-  <div class="card">
+<div id="modal" class="modal hidden" aria-hidden="true">
+  <div class="card" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+    <!-- Botón X con respaldo inline -->
+    <button type="button" class="close" id="btn-x" aria-label="Cerrar" onclick="window.closeModalInline()">✕</button>
     <h3 id="modal-title">Nuevo pedido</h3>
     <form id="form">
       <input type="hidden" id="id">
@@ -67,7 +69,8 @@
       </div>
       <div class="row"><label>Notas</label><textarea id="notas" rows="3"></textarea></div>
       <div class="actions">
-        <button type="button" id="btn-cancelar">Cancelar</button>
+        <!-- Respaldo inline también en Cancelar -->
+        <button type="button" id="btn-cancelar" onclick="window.closeModalInline()">Cancelar</button>
         <button type="submit" class="primary">Guardar</button>
       </div>
     </form>
