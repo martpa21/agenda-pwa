@@ -7,20 +7,24 @@ button{border:1px solid var(--line);background:#f6f7f9;padding:8px 12px;border-r
 button.primary{background:var(--c);color:#fff;border-color:var(--c)}
 button.active{outline:2px solid var(--c)}
 main{padding:12px}
-.hidden{display:none}
+.hidden{display:none !important;} /* <- asegura que oculte siempre */
 
 .table{width:100%;border-collapse:collapse} .table th,.table td{padding:10px;border-bottom:1px solid var(--line);text-align:left}
 .table th{background:#fafafa}
 .actions{display:flex;gap:8px;justify-content:flex-end;margin:10px 0}
 .file-btn{display:inline-flex;align-items:center;gap:8px;border:1px solid var(--line);background:#f6f7f9;padding:8px 12px;border-radius:10px;cursor:pointer}
 
+/* Modal */
 .modal{position:fixed;inset:0;background:rgba(0,0,0,.35);display:flex;align-items:center;justify-content:center;padding:12px}
-.card{background:#fff;border-radius:16px;padding:12px;max-width:720px;width:100%;box-shadow:0 10px 30px rgba(0,0,0,.2)}
+.card{background:#fff;border-radius:16px;padding:12px;max-width:720px;width:100%;box-shadow:0 10px 30px rgba(0,0,0,.2);position:relative}
 .card h3{margin:8px 6px}
+.close{position:absolute;top:10px;right:12px;border:none;background:transparent;font-size:20px;line-height:1;cursor:pointer;color:#666}
+
 .row{display:flex;flex-direction:column;margin:6px}
 .row.two{display:grid;grid-template-columns:1fr 1fr;gap:8px}
 input,textarea{padding:10px;border:1px solid var(--line);border-radius:10px}
 
+/* Calendario */
 .cal-head{display:flex;align-items:center;justify-content:center;gap:8px}
 .cal-head h2{min-width:200px;text-align:center}
 .cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;margin:10px 0}
